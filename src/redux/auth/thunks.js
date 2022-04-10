@@ -30,7 +30,6 @@ export const loginThunk = createAsyncThunk(
       const response1 = await store
         .dispatch(usersGetSelfUserThunk())
         .then(unwrapResult);
-      console.log(response1);
       return response1;
     } catch (e) {
       console.error("Login thunk error", e);

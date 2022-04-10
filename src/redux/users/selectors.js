@@ -27,7 +27,6 @@ export const getUserStageSelector = createSelector(
   (_, { userId }) => userId,
   ({ entities }, uid) => {
     const user = entities[uid];
-    console.debug(entities, uid, entities[uid], !user);
     if (!user) {
       return -1;
     }

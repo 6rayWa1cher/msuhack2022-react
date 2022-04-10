@@ -66,16 +66,14 @@ const ButtonsTable = () => {
       ),
     [userId, dispatch]
   );
-  const { execute, status, loading, error } = useLoadingPlain(action, {
+  const { execute, loading, error } = useLoadingPlain(action, {
     enqueue: true,
     errorToMsg: "Возникла ошибка при загрузке списка кнопок",
   });
-  console.log(status);
   const buttons = useParamSelector(getAllButtonsByOwnerIdSelector, {
     ownerId: userId,
   });
   const handleClick = useCallback(() => {
-    console.log("clicked");
     execute();
   }, [execute]);
   useIntervalWhen(execute, 2000, !loading && !error, true);
