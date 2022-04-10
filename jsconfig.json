@@ -1,0 +1,10 @@
+{
+  "extends": "./jsconfig.paths.json",
+  "compilerOptions": {
+    "jsx": "react"
+  },
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
+}
