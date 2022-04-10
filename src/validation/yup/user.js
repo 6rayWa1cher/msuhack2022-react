@@ -1,12 +1,12 @@
 import yup from "./utils";
 
+const username = yup.string().min(3).max(25).required();
+
 const password = yup.string().min(6).max(128).required();
 const confirmPassword = yup
   .string()
   .oneOf([yup.ref("password")], "Пароли не одинаковы")
   .required();
-
-const username = yup.string().min(3).max(25).required();
 
 const privacyPolicyAgreement = yup
   .bool()

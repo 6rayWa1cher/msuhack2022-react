@@ -4,7 +4,7 @@ import {
   useMySnackbar,
   useParamSelector,
 } from "@utils/hooks";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useLoadingPlain } from "@utils/hooks";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -16,12 +16,44 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getAllButtonsByOwnerThunk,
   getAllButtonsByOwnerIdSelector,
+  deleteButtonThunk,
 } from "@redux/buttons";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { getSelfUserSelector } from "@redux/users/selectors";
 import BigProcess from "@components/BigProcess";
 import BigError from "@components/BigError";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import Button from "@mui/material/Button";
+import { ButtonEditModal } from "@pages/ButtonEdit";
+import { useIntervalWhen } from "rooks";
+
+const ButtonRow = ({ buttonId, label, press_counter, onClick }) => {
+  const dispatch = useDispatch();
+  const { enqueueError } = useMySnackbar();
+  const handleDeleteClick = () =>
+    dispatch(deleteButtonThunk({ buttonId }))
+      .then(unwrapResult)
+      .catch((e) => enqueueError("Возникла ошибка при удалении кнопки"));
+  return (
+    <TableRow
+      key={buttonId}
+      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+    >
+      <TableCell component="th" scope="row">
+        {label}
+      </TableCell>
+      <TableCell align="right">{press_counter}</TableCell>
+      <TableCell align="right">
+        <Button variant="outlined" onClick={onClick}>
+          Изменить
+        </Button>
+        <Button variant="outlined" color="error" onClick={handleDeleteClick}>
+          Удалить
+        </Button>
+      </TableCell>
+    </TableRow>
+  );
+};
 
 const ButtonsTable = () => {
   const dispatch = useDispatch();
@@ -46,6 +78,9 @@ const ButtonsTable = () => {
     console.log("clicked");
     execute();
   }, [execute]);
+  useIntervalWhen(execute, 2000, !loading && !error, true);
+  const [buttonId, setButtonId] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   let bottomContent;
 
@@ -68,16 +103,15 @@ const ButtonsTable = () => {
         </TableHead>
         <TableBody>
           {buttons.map((row) => (
-            <TableRow
-              key={row.id}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.label}
-              </TableCell>
-              <TableCell align="right">{row.press_counter}</TableCell>
-              <TableCell align="right"></TableCell>
-            </TableRow>
+            <ButtonRow
+              buttonId={row.id}
+              label={row.label}
+              press_counter={row.press_counter}
+              onClick={() => {
+                setButtonId(row.id);
+                setOpenModal(true);
+              }}
+            />
           ))}
         </TableBody>
       </Table>
@@ -89,6 +123,11 @@ const ButtonsTable = () => {
         <RefreshIcon />
       </IconButton>
       {bottomContent}
+      <ButtonEditModal
+        buttonId={buttonId}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+      />
     </>
   );
 };
@@ -96,7 +135,7 @@ const ButtonsTable = () => {
 const MainPage = () => {
   useDocumentTitle("Главная");
   const { id: userId } = useSelector(getSelfUserSelector);
-  const url = `${process.env.REACT_APP_BACKEND_URL}/mts-integration/${userId}`;
+  const url = `${process.env.REACT_APP_BACKEND_URL}mts-integration/${userId}`;
   return (
     <>
       <Typography>URL сервера приложений:</Typography>

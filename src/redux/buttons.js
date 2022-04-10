@@ -8,7 +8,11 @@ import { unwrapResult } from "@reduxjs/toolkit";
 
 import { entityAdapterWithExtract, myNormalize } from "@utils/redux";
 import { createAsyncThunkWrapped } from "@utils/thunkWrapper";
-import { getButtonsByOwnerIdApi } from "@api/buttons";
+import {
+  deleteButtonApi,
+  getButtonsByOwnerIdApi,
+  putButtonApi,
+} from "@api/buttons";
 import { button } from "@validation/normalizr";
 
 const buttonsSelector = (state) => state.buttons;
@@ -39,11 +43,40 @@ export const getAllButtonsByOwnerThunk = createAsyncThunkWrapped(
   }
 );
 
+export const putButtonThunk = createAsyncThunkWrapped(
+  "buttons/putButton",
+  async ({ buttonId, label, description, press_counter }) => {
+    const response = await putButtonApi(buttonId, {
+      label,
+      description,
+      press_counter,
+    });
+    return myNormalize(response.data, button);
+  }
+);
+
+export const deleteButtonThunk = createAsyncThunkWrapped(
+  "buttons/deleteButton",
+  async ({ buttonId }) => {
+    await deleteButtonApi(buttonId);
+    return { buttonId };
+  }
+);
+
 export const buttons = createSlice({
   name: "buttons",
   initialState: buttonsAdapter.getInitialState(),
   reducers: {},
   extraReducers: (builder) => {
+    builder.addCase(deleteButtonThunk.fulfilled, (state, { payload }) => {
+      buttonsAdapter.removeOne(state, payload.buttonId);
+    });
+    builder.addMatcher(
+      isAnyOf(putButtonThunk.fulfilled),
+      (state, { payload }) => {
+        buttonsAdapter.upsertOneFromPayload(state, payload);
+      }
+    );
     builder.addMatcher(
       isAnyOf(getAllButtonsByOwnerThunk.fulfilled),
       (state, { payload }) => {
