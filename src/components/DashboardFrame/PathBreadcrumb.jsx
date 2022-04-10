@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import { useLocation, Link as RouterLink } from "react-router-dom";
 
 const localizationTable = {
-  "": "Fantasy Unicorn",
+  "": "XyDx Product",
   contest: "Конкурсы",
   register: "Регистрация",
   history: "История игр",

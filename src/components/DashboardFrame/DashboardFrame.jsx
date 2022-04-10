@@ -116,7 +116,7 @@ const DashboardContent = ({ children }) => {
               pr: "24px", // keep right padding when drawer closed
             }}
           >
-            <IconButton
+            {/* <IconButton
               edge="start"
               color="inherit"
               aria-label="open drawer"
@@ -127,7 +127,7 @@ const DashboardContent = ({ children }) => {
               }}
             >
               <MenuIcon />
-            </IconButton>
+            </IconButton> */}
             <PathBreadcrumb largeScreen={largeScreen} sx={{ flexGrow: 1 }} />
             <LogoutButton />
           </Toolbar>
