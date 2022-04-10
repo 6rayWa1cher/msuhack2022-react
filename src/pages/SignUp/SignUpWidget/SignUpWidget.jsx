@@ -74,7 +74,7 @@ export default function SignUpWidget() {
   );
 
   if (redirect) {
-    return <Navigate to={`/email?email=${redirectEmail}`} replace />;
+    return <Navigate to="/" replace />;
   } else {
     return (
       <Container component="main" maxWidth="xs">

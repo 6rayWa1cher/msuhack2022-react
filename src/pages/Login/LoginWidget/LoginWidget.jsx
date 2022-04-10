@@ -46,7 +46,10 @@ const LoginWidget = ({ redirectTo = "/" }) => {
         })
         .catch((e) => {
           if (
-            e.errors?.includes("Invalid login credentials. Please try again.")
+            e.errors?.includes(
+              "Invalid login credentials. Please try again."
+            ) ||
+            e.code === 401
           ) {
             enqueueError("Неверный username или пароль");
           } else {
